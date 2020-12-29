@@ -7,7 +7,6 @@ import { blue } from "@material-ui/core/colors";
 import Box from "@material-ui/core/Box";
 import { Paper } from "@material-ui/core";
 
-const emails = ["username@gmail.com", "user02@gmail.com"];
 const useStyles = makeStyles({
   avatar: {
     backgroundColor: blue[100],
@@ -28,7 +27,6 @@ const useStyles = makeStyles({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-evenly",
-    // padding: 20
   },
   paper: {
     padding: 20,

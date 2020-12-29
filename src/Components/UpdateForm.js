@@ -1,17 +1,16 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Paper,
-  Radio,
-  FormControl,
-  RadioGroup,
-  FormControlLabel,
-  TextField,
-  Button,
-  Typography,
-  Zoom,
-} from "@material-ui/core";
-import axios from "axios";
+import Box from "@material-ui/core/Box";
+import Paper from "@material-ui/core/Paper";
+import Radio from "@material-ui/core/Radio";
+import FormControl from "@material-ui/core/FormControl";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import Typography from "@material-ui/core/Typography";
+import Zoom from "@material-ui/core/Zoom";
+import { useData } from "../context/DataContext";
+import backend from "../api/backend";
 
 const UpdateForm = (props) => {
   const [value, setValue] = React.useState("Mess Owner");
@@ -22,12 +21,13 @@ const UpdateForm = (props) => {
   const [dish, setDish] = useState("");
   const [price, setPrice] = useState("");
   const { mess } = props.location.state;
+  const { updateComponent } = useData();
 
   const handleChange = (event) => {
     setValue(event.target.value);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmitMess = async () => {
     const id = mess.timetable.find(
       (row) => row.day.toLowerCase() === day.toLowerCase()
     );
@@ -35,14 +35,13 @@ const UpdateForm = (props) => {
     const dayid = id._id;
 
     try {
-      const res = await axios.post(`http://localhost:5000/updatemess`, {
+      const res = await backend.post(`/updatemess`, {
         breakfast: breakfast,
         lunch: lunch,
         dinner: dinner,
         messid: messid,
         dayid: dayid,
       });
-      console.log(res);
     } catch (error) {
       console.log(error);
     }
@@ -155,6 +154,20 @@ const UpdateForm = (props) => {
                   margin="normal"
                 />
               </Box>
+              <Button
+                style={{
+                  padding: 10,
+                  marginTop: 20,
+                  backgroundColor: "#A0A",
+                  color: "#FFF",
+                }}
+                onClick={() => {
+                  handleSubmitMess();
+                  updateComponent();
+                }}
+              >
+                Update
+              </Button>
             </>
           ) : (
             <>
@@ -186,19 +199,19 @@ const UpdateForm = (props) => {
                   margin="normal"
                 />
               </Box>
+              <Button
+                style={{
+                  padding: 10,
+                  marginTop: 20,
+                  backgroundColor: "#A0A",
+                  color: "#FFF",
+                }}
+                onClick={handleSubmitCanteen}
+              >
+                Update
+              </Button>
             </>
           )}
-          <Button
-            style={{
-              padding: 10,
-              marginTop: 20,
-              backgroundColor: "#A0A",
-              color: "#FFF",
-            }}
-            onClick={handleSubmit}
-          >
-            Update
-          </Button>
         </Paper>
       </Zoom>
     </Box>

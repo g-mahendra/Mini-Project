@@ -8,7 +8,6 @@ import MainFeaturedPost from "./MainFeaturedPost";
 import Main from "./Main";
 import Sidebar from "./Sidebar";
 import { useAuth } from "../context/AuthContext";
-import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
   mainGrid: {

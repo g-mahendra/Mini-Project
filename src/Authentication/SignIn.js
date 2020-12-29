@@ -9,10 +9,11 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import { Box, CircularProgress } from "@material-ui/core";
 import { useAuth } from "../context/AuthContext";
 import { useHistory, Link, Redirect } from "react-router-dom";
 import Alert from "@material-ui/lab/Alert";
+import Box from "@material-ui/core/Box";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -44,9 +45,9 @@ const useStyles = makeStyles((theme) => ({
     height: "100vh",
     width: "100vw",
   },
-  alert:{
-    marginTop: theme.spacing(2)
-  }
+  alert: {
+    marginTop: theme.spacing(2),
+  },
 }));
 
 export default function SignIn() {

@@ -15,6 +15,7 @@ import { useAuth } from "../context/AuthContext";
 import ContactUsDialog from "../Components/ContactUsDialog";
 import { Link } from "react-router-dom";
 import { useData } from "../context/DataContext";
+import Paper from "@material-ui/core/Paper";
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
@@ -46,9 +47,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
   },
   link: {
-    color: '#000',
-    textDecoration: 'none'
-  }
+    color: "#000",
+    textDecoration: "none",
+  },
 }));
 
 export default function Header(props) {
@@ -70,11 +71,8 @@ export default function Header(props) {
     }
   };
 
-  canteen ? console.log(canteen) : null;
-  mess ? console.log(mess) : null;
-
   return (
-    <React.Fragment>
+    <Paper elevation={3}>
       <Toolbar className={classes.toolbar}>
         <Link className={classes.link} to="/">
           <Typography
@@ -157,7 +155,7 @@ export default function Header(props) {
           </Container>
         </Grid>
       </Toolbar>
-    </React.Fragment>
+    </Paper>
   );
 }
 

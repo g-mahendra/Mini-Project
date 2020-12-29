@@ -9,51 +9,49 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 
 const useStyles = makeStyles({
-    table: {
-        minWidth: "100%",
-        maxWidth: 500,
-    },
+  table: {
+    minWidth: "100%",
+    maxWidth: 650,
+  },
+  heading: {
+    fontWeight: "bolder",
+    color: "#FFF",
+  },
 });
 
-function createData(srno, dish1, price) {
-    return { srno, dish1, price };
-}
-
-const rows = [
-    createData("1", "dish1", "price"),
-    createData("2", "dish1", "price"),
-    createData("3", "dish1", "price"),
-    createData("4", "dish1", "price"),
-    createData("5", "dish1", "price"),
-    createData("6", "dish1", "price"),
-];
-
-export default function TableComponent() {
-    const classes = useStyles();
-
-    return (
-        <TableContainer component={Paper}>
-            <Table className={classes.table} aria-label="simple table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell>srno</TableCell>
-                        <TableCell align="center">Dishes</TableCell>
-                        <TableCell align="center">Price</TableCell>
-
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {rows.map((row) => (
-                        <TableRow key={row.name}>
-                            <TableCell component="th" scope="row">
-                                {row.srno}
-                            </TableCell>
-                            <TableCell align="center">{row.dish1}</TableCell>
-                            <TableCell align="center">{row.price}</TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
-    );
+export default function TableCanteen({ menu }) {
+  const classes = useStyles();
+  var count = 1;
+  let i = 1;
+  return (
+    <TableContainer component={Paper}>
+      <Table className={classes.table} aria-label="simple table">
+        <TableHead style={{ backgroundColor: "#000" }}>
+          <TableRow>
+            <TableCell className={classes.heading}>Sr.No</TableCell>
+            <TableCell className={classes.heading} align="center">
+              Dish Name
+            </TableCell>
+            <TableCell className={classes.heading} align="center">
+              Price
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {menu.map((row) => (
+            <TableRow
+              style={{ backgroundColor: count++ % 2 === 0 ? "#eee" : "#fff" }}
+              key={row._id}
+            >
+              <TableCell component="th" scope="row">
+                {i++}
+              </TableCell>
+              <TableCell align="center">{row.dish}</TableCell>
+              <TableCell align="center">{row.price}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
 }

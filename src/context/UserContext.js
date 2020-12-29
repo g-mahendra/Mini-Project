@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "./AuthContext";
-import axios from "axios";
+import backend from "../api/backend";
 
 const UserContext = createContext();
 
@@ -15,10 +15,7 @@ export function UserProvider({ children }) {
   useEffect(async () => {
     if (currentUser) {
       try {
-        const user = await axios.get(
-          `http://localhost:5000/findUser/${currentUser.email}`
-        );
-        console.log(user.data[0]);
+        const user = await backend.get(`/findUser/${currentUser.email}`);
         setUser(user.data[0]);
       } catch (e) {
         console.log(e);

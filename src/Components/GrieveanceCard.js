@@ -4,7 +4,8 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
-import { Button, CardActions } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
+import CardActions from '@material-ui/core/CardActions';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -41,7 +42,7 @@ export default function SimpleCard({ post }) {
 
   return (
     <Grid item xs={12} md={6}>
-      <Card justify="center" className={classes.card}>
+      <Card elevation={5} justify="center" className={classes.card}>
         <div className={classes.cardDetails}>
           <CardContent>
             <Typography component="h2" variant="h5">

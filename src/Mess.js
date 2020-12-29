@@ -1,19 +1,18 @@
-import {
-  Box,
-  Button,
-  Container,
-  Grid,
-  makeStyles,
-  Paper,
-  Typography,
-} from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import Box from "@material-ui/core/Box";
+import Button from "@material-ui/core/Button";
+import Container from "@material-ui/core/Container";
+import Grid from "@material-ui/core/Grid";
+import Paper from "@material-ui/core/Paper";
+import Typography from "@material-ui/core/Typography";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import MainFeaturedPost from "./Blog/MainFeaturedPost";
 import TableComponent from "./Components/TableComponent";
 import FeaturedPost from "./Blog/FeaturedPost";
 import { Link } from "react-router-dom";
-import { useAuth } from "./context/AuthContext";
 import { useUser } from "./context/UserContext";
+import { useData } from "./context/DataContext";
 
 const useStyles = makeStyles({
   item: {
@@ -35,7 +34,7 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
   },
   paper: {
     display: "flex",
@@ -60,12 +59,23 @@ const Mess = (props) => {
   const { item } = props.location.state;
   const classes = useStyles();
   const { user } = useUser();
+  const { mess, updateComponent } = useData();
   var nowUser = "Student";
+  const [thisMessTimetable, setThisMessTimetable] = useState();
+  const [thisMessReviews, setThisMessReviews] = useState();
 
   if (user) {
     nowUser = user.type.toString();
-    // console.log(toString(user.type));
   }
+
+  useEffect(() => {
+    updateComponent();
+    if (mess) {
+      const currentMess = mess.find((each) => each._id === item._id);
+      setThisMessTimetable(currentMess.timetable);
+      setThisMessReviews(currentMess.reviews);
+    }
+  }, [mess]);
 
   const post = {
     image:
@@ -74,34 +84,7 @@ const Mess = (props) => {
     title: `${item.name}`,
     description: `${item.information}`,
   };
-
-  // const featuredPosts = [
-  //   {
-  //     title: "Featured post",
-  //     name: "Simba",
-  //     description:
-  //       "This is a wider card with supporting text below as a natural lead-in to additional content.",
-  //     image: "https://source.unsplash.com/random",
-  //     imageText: "Image Text",
-  //   },
-  //   {
-  //     title: "Post title",
-  //     name: "Simba",
-  //     description:
-  //       "This is a wider card with supporting text below as a natural lead-in to additional content.",
-  //     image: "https://source.unsplash.com/random",
-  //     imageText: "Image Text",
-  //   },
-  //   {
-  //     title: "Post title1",
-  //     name: "Simba",
-  //     description:
-  //       "This is a wider card with supporting text below as a natural lead-in to additional content.",
-  //     image: "https://source.unsplash.com/random",
-  //     imageText: "Image Text",
-  //   },
-  // ];
-
+  let i = 0;
   return (
     <Grid className={classes.mainGrid} container>
       <Box className={classes.pictureBox}>
@@ -130,12 +113,14 @@ const Mess = (props) => {
                 <Typography variant="h3" component="b">
                   Time Table
                 </Typography>
-                {nowUser === "Mess Owner" ? (
+                {nowUser === "Mess Owner" &&
+                item.name.replaceAll(" ", "").toLowerCase() ===
+                  user.service.replaceAll(" ", "").toLowerCase() ? (
                   <Link
                     className={classes.link}
                     to={{
                       pathname: "/mess/update",
-                      state: { mess: item },
+                      state: { mess: item, canteen: {} },
                     }}
                   >
                     <Button className={classes.editBtn} variant="contained">
@@ -144,7 +129,12 @@ const Mess = (props) => {
                   </Link>
                 ) : null}
               </Box>
-              <TableComponent timetable={item.timetable} />
+
+              {thisMessTimetable ? (
+                <TableComponent timetable={thisMessTimetable} />
+              ) : (
+                <CircularProgress size={50} />
+              )}
             </Box>
           </Container>
         </Grid>
@@ -202,9 +192,15 @@ const Mess = (props) => {
           <Typography className={classes.item} variant="h4" component="b">
             Reviews
           </Typography>
-          {item.reviews.map((post) => (
-            <FeaturedPost key={post.title} post={post} />
-          ))}
+          <Box>
+            {thisMessReviews ? (
+              thisMessReviews
+                .slice(0, 2)
+                .map((post) => <FeaturedPost key={post.title} post={post} />)
+            ) : (
+              <CircularProgress />
+            )}
+          </Box>
           <Grid
             style={{
               display: "flex",
@@ -212,10 +208,13 @@ const Mess = (props) => {
               justifyContent: "space-between",
             }}
           >
-            <Link className={classes.link} to={{
-              pathname: "/mess/reviews",
-              state:{reviews: item.reviews}
-            }}>
+            <Link
+              className={classes.link}
+              to={{
+                pathname: "/mess/reviews",
+                state: { reviews: thisMessReviews },
+              }}
+            >
               <Button
                 variant="outlined"
                 style={{ backgroundColor: "#FFF", padding: 10 }}
@@ -223,7 +222,13 @@ const Mess = (props) => {
                 More Reviews
               </Button>
             </Link>
-            <Link className={classes.link} to="/mess/addreview">
+            <Link
+              className={classes.link}
+              to={{
+                pathname: "/mess/addreview",
+                state: { mess: item },
+              }}
+            >
               <Button
                 variant="outlined"
                 style={{ backgroundColor: "#FFF", padding: 10 }}

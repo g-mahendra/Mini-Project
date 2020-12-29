@@ -19,15 +19,8 @@ const useStyles = makeStyles({
   },
 });
 
-function createData(day, dish1, dish2, dish3, id) {
-  return { day, dish1, dish2, dish3, id };
-}
-
-const rows = [];
-
 export default function TableComponent({ timetable }) {
   const classes = useStyles();
-  console.log(timetable);
   var count = 1;
   return (
     <TableContainer component={Paper}>

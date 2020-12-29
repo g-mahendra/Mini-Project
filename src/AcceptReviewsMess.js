@@ -1,4 +1,4 @@
-import React, { Component, useRef } from "react";
+import React, { Component, useState } from "react";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
@@ -6,11 +6,11 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Divider from "@material-ui/core/Divider";
 import FormGroup from "@material-ui/core/FormGroup";
+import Rating from "@material-ui/lab/Rating";
 import Box from "@material-ui/core/Box";
 import CreateIcon from "@material-ui/icons/Create";
 import Switch from "@material-ui/core/Switch";
 import backend from "./api/backend";
-import { storage } from "./firebase/firebase";
 
 // Styles object for all styles in page
 const styles = {
@@ -72,17 +72,17 @@ const styles = {
 const nameREG = /^[a-zA-Z ]{4,20}$/;
 const reviewTitleREG = /^[a-zA-Z0-9 ]{10,100}$/;
 
-class AddGrievance extends Component {
+class AcceptReviewsMess extends Component {
   // State Object
   state = {
     authorName: "",
     reviewTitle: "",
     reviewBody: "",
+    rating: 0,
     switch: false,
     nameError: "",
     reviewTitleError: "",
-    image: "",
-    url: "",
+    id: "0",
   };
 
   // Function to handle reseting of form
@@ -124,48 +124,13 @@ class AddGrievance extends Component {
 
   // Function for handeling form submit
   async onSubmit() {
-    if (this.state.image !== "") {
-      try {
-        const uploadTask = await storage
-          .ref(`/images/${this.state.image.name}`)
-          .put(this.state.image);
-        uploadTask.task.on(
-          "state_changed",
-          (snapshot) => {},
-          (err) => console.log(err),
-          () => {
-            storage
-              .ref("images")
-              .child(this.state.image.name)
-              .getDownloadURL()
-              .then((url) => {
-                this.setState({
-                  url: url,
-                });
-                console.log(url);
-              })
-              .then(async () => {
-                await backend.post("/addgrievance", {
-                  title: this.state.reviewTitle,
-                  name: this.state.authorName,
-                  body: this.state.reviewBody,
-                  url: this.state.url,
-                });
-              })
-              .catch((e) => console.log(e));
-          }
-        );
-      } catch (error) {
-        console.log(error);
-      }
-    } else {
-      await backend.post("/addgrievance", {
-        title: this.state.reviewTitle,
-        name: this.state.authorName,
-        body: this.state.reviewBody,
-        url: "",
-      });
-    }
+    await backend.post("/addreview", {
+      name: this.state.authorName,
+      title: this.state.reviewTitle,
+      body: this.state.reviewBody,
+      rating: this.state.rating,
+      id: this.props.location.state.mess._id,
+    });
   }
 
   // Function for handleing anonymous switch
@@ -182,16 +147,16 @@ class AddGrievance extends Component {
       });
     }
   }
+
   // Render method
   render() {
-    // this.state.image ? console.log(this.state.image) : null;
     return (
       <Grid style={styles.outerGrid} container>
         <Grid item container md={1} sm={1} xs={1} />
         <Grid item container md={10} sm={10} xs={10} style={styles.middleGrid}>
-          <Paper style={styles.mainPaper} elevation={4}>
+          <Paper style={styles.mainPaper} elevation={10}>
             <Typography align="center" gutterBottom noWrap variant="h4">
-              <CreateIcon /> Add your Grievance
+              <CreateIcon /> Add your review
             </Typography>
             <Divider />
             <form>
@@ -239,10 +204,10 @@ class AddGrievance extends Component {
                   </Box>
                 ) : null}
                 <Typography style={styles.label} variant="h5" component="h5">
-                  Title
+                  Review Title
                 </Typography>
                 <TextField
-                  label="Grievance Title"
+                  label="Review Title"
                   required
                   error={this.state.reviewTitleError ? true : false}
                   helperText={
@@ -252,7 +217,7 @@ class AddGrievance extends Component {
                   }
                   value={this.state.reviewTitle}
                   type="title"
-                  placeholder="Enter Title"
+                  placeholder="Enter Review Title"
                   variant="outlined"
                   style={styles.input}
                   margin="normal"
@@ -264,34 +229,35 @@ class AddGrievance extends Component {
                   }}
                 />
                 <Typography style={styles.label} variant="h5" component="h5">
-                  Body
+                  Review Body
                 </Typography>
                 <TextField
                   value={this.state.reviewBody}
                   type="name"
-                  label="Grievance Body"
+                  label="Review Body"
                   variant="outlined"
                   style={styles.input}
                   margin="normal"
                   multiline
-                  placeholder="Enter grievance Here"
+                  placeholder="Enter Review Here"
                   onChange={(newValue) => {
                     this.setState({
                       reviewBody: newValue.target.value,
                     });
                   }}
                 />
-                <Typography gutterBottom variant="h6" component="h6">
-                  Submit images if any...
+                <Typography style={styles.label} variant="h5" component="h5">
+                  Rate your experience
                 </Typography>
-                <input
-                  type="file"
-                  onChange={({ target }) =>
+                <Rating
+                  name="simple-controlled"
+                  value={this.state.rating}
+                  onChange={(event, newValue) => {
                     this.setState({
-                      image: target.files[0],
-                    })
-                  }
-                ></input>
+                      rating: newValue,
+                    });
+                  }}
+                />
                 <Box style={styles.buttonBox}>
                   <Button
                     onClick={() => this.onReset()}
@@ -307,7 +273,7 @@ class AddGrievance extends Component {
                     variant="contained"
                     style={styles.submitButton}
                   >
-                    Submit
+                    Submit Review
                   </Button>
                 </Box>
               </FormGroup>
@@ -320,4 +286,4 @@ class AddGrievance extends Component {
   }
 }
 
-export default AddGrievance;
+export default AcceptReviewsMess;

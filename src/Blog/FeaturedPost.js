@@ -7,6 +7,8 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Hidden from "@material-ui/core/Hidden";
+import Rating from "@material-ui/lab/Rating";
+import Box from '@material-ui/core/Box';
 
 const useStyles = makeStyles({
   card: {
@@ -39,9 +41,15 @@ export default function FeaturedPost(props) {
             <Typography variant="subtitle1" paragraph>
               {post.reviewBody}
             </Typography>
+            <Box style={{
+              display: 'flex',
+              flexDirection: 'row'
+            }}>
             <Typography variant="subtitle1" paragraph>
-              {`Rating out of 5 ${post.rating}`}
+              {`Rating out of 5: `}
             </Typography>
+            <Rating readOnly value={post.rating}/>
+            </Box>
           </CardContent>
         </div>
         <Hidden xsDown>

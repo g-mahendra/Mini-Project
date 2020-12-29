@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
-import { ListItem, ListItemText, List, makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -34,7 +37,7 @@ export default function CostomDialog({ mess, canteen, visible }) {
         aria-describedby="alert-dialog-slide-description"
       >
         <DialogTitle id="alert-dialog-slide-title">
-          {"Use Google's location service?"}
+          {mess ? "Choose a Mess" : "Choose a canteen"}
         </DialogTitle>
         <DialogContent>
           <List className={classes.list}>
@@ -48,7 +51,7 @@ export default function CostomDialog({ mess, canteen, visible }) {
                         state: { item },
                       }}
                     >
-                      <ListItem button className={classes.item}>
+                      <ListItem button >
                         <ListItemText primary={`${item.name}`} />
                       </ListItem>
                     </Link>
@@ -63,7 +66,7 @@ export default function CostomDialog({ mess, canteen, visible }) {
                         state: { item },
                       }}
                     >
-                      <ListItem button className={classes.item}>
+                      <ListItem button>
                         <ListItemText primary={`${item.name}`} />
                       </ListItem>
                     </Link>
