@@ -7,9 +7,14 @@ const CanteenSchema = mongoose.Schema({
   closingTime: String,
   location: String,
   menu: [{
-    no: String,
     dish: String,
     price: String
+  }],
+  reviews: [{
+    authourName: String,
+    reviewTitle: String,
+    reviewBody: String,
+    rating: String
   }]
 });
 
