@@ -5,7 +5,7 @@ const Users = require("./models/User");
 const Mess = require("./models/Mess");
 const cors = require("cors");
 const Canteen = require("./models/Canteen");
-const Grievance = require('./models/Grievance');
+const Grievance = require("./models/Grievance");
 
 app.use(express.json());
 app.use(cors());
@@ -29,13 +29,14 @@ app.post("/signup", async (req, res) => {
   const email = req.body.email;
   const type = req.body.type;
   const password = req.body.password;
-
+  const service = req.body.service;
   const user = new Users({
     fName: fName,
     lName: lName,
     email: email,
     password: password,
     type: type,
+    service: service,
   });
   try {
     await user.save();
@@ -63,7 +64,7 @@ app.post("/addmess", async (req, res) => {
     pricePerMonth: pricePerMonth,
     location: location,
     timetable: timetable,
-    reviews: reviews
+    reviews: reviews,
   });
   try {
     await mess.save();
@@ -71,93 +72,6 @@ app.post("/addmess", async (req, res) => {
   } catch (e) {
     console.log(e);
   }
-});
-
-app.post("/addcanteen", async (req, res) => {
-  const name = req.body.name;
-  const information = req.body.information;
-  const openingTime = req.body.openingTime;
-  const closingTime = req.body.closingTime;
-  const menu = req.body.menu;
-  const location = req.body.location;
-
-  const canteen = new Canteen({
-    name: name,
-    information: information,
-    openingTime: openingTime,
-    closingTime: closingTime,
-    location: location,
-    menu: menu,
-  });
-  try {
-    await canteen.save();
-    res.status(200).send("Inserted ");
-  } catch (e) {
-    console.log(e);
-  }
-});
-
-app.post("/addgrievance", async (req, res) => {
-  const title = req.body.title;
-  const name = req.body.name;
-  const body = req.body.body;
-  const url = req.body.url;
-
-  const grievance = new Grievance({
-    title: title,
-    name: name,
-    body: body,
-    url: url
-  });
-  try {
-    await grievance.save();
-    res.status(200).send("Inserted ");
-  } catch (e) {
-    console.log(e);
-  }
-});
-
-app.get('/getgrievance', async (req, res)=>{
-  await Grievance.find({}, (error, result)=>{
-    if(error) console.log(error);
-    else if(result) {
-      console.log(result)
-      res.status(200).send(result);
-    };
-  })
-})
-
-app.get("/updatecanteen/:id", (req, res) => {
-  Canteen.findByIdAndUpdate(
-    req.params.id,
-    {
-      $push: {
-        menu: {
-          no: "two",
-          dish: "Dish2",
-          price: "Rs 20",
-        },
-      },
-    },
-    { safe: true, upsert: true },
-    (error, result) => {
-      if (error) console.log(error);
-      if (result) {
-        console.log(result);
-        res.json(result);
-      }
-    }
-  );
-});
-
-app.get(`/findUser/:mail`, async (req, res) => {
-  await Users.find({ email: req.params.mail }, (err, result) => {
-    if (err) console.log(err);
-    else if (result) {
-      console.log(result);
-      res.send(result);
-    }
-  });
 });
 
 app.get("/getmess", async (req, res) => {
@@ -187,10 +101,134 @@ app.post("/updatemess", async (req, res) => {
   );
 });
 
+app.post("/addreview", async (req, res) => {
+   Mess.findByIdAndUpdate(
+    req.body.id,
+    {
+      $push: {
+        reviews: {
+          authourName: req.body.name,
+          reviewTitle: req.body.title,
+          reviewBody: req.body.body,
+          rating: req.body.rating,
+        },
+      },
+    },
+    { safe: true, upsert: true },
+    (error) => {
+      if (error) console.log(error);
+      console.log("Added review");
+    }
+  );
+});
+
+app.post("/addcanteen", async (req, res) => {
+  const name = req.body.name;
+  const information = req.body.information;
+  const openingTime = req.body.openingTime;
+  const closingTime = req.body.closingTime;
+  const location = req.body.location;
+  const menu = req.body.menu;
+  const reviews = req.body.reviews;
+
+  const canteen = new Canteen({
+    name: name,
+    information: information,
+    openingTime: openingTime,
+    closingTime: closingTime,
+    location: location,
+    menu: menu,
+    reviews: reviews,
+  });
+  try {
+    await canteen.save();
+    res.status(200).send("Inserted ");
+  } catch (e) {
+    console.log(e);
+  }
+});
+
 app.get("/getcanteen", async (req, res) => {
   await Canteen.find({}, (err, result) => {
     if (result) res.send(result);
     else if (err) console.log(err);
+  });
+});
+
+app.post("/updatedish", async (req, res) => {
+  await Canteen.update(
+    { _id: req.body.canteenid, "menu._id": req.body.dishid },
+    {
+      $set: {
+        "menu.$.price": req.body.price,
+      },
+    },
+    (error) => {
+      if (error) console.log(error);
+      else {
+        console.log("Done updating dish");
+      }
+    }
+  );
+});
+
+app.post("/addreviewcanteen", async (req, res) => {
+   Canteen.findByIdAndUpdate(
+    req.body.id,
+    {
+      $push: {
+        reviews: {
+          authourName: req.body.name,
+          reviewTitle: req.body.title,
+          reviewBody: req.body.body,
+          rating: req.body.rating,
+        },
+      },
+    },
+    { safe: true, upsert: true },
+    (error) => {
+      if (error) console.log(error);
+      console.log("Added review Canteen");
+    }
+  );
+});
+
+
+app.post("/addgrievance", async (req, res) => {
+  const title = req.body.title;
+  const name = req.body.name;
+  const body = req.body.body;
+  const url = req.body.url;
+
+  const grievance = new Grievance({
+    title: title,
+    name: name,
+    body: body,
+    url: url,
+  });
+  try {
+    await grievance.save();
+    res.status(200).send("Inserted ");
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+app.get("/getgrievance", async (req, res) => {
+  await Grievance.find({}, (error, result) => {
+    if (error) console.log(error);
+    else if (result) {
+      res.status(200).send(result);
+    }
+  });
+});
+
+app.get(`/findUser/:mail`, async (req, res) => {
+  await Users.find({ email: req.params.mail }, (err, result) => {
+    if (err) console.log(err);
+    else if (result) {
+      res.send(result);
+    }
   });
 });
 
